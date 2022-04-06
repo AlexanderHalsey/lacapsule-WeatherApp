@@ -26,7 +26,7 @@
     <div id="grid-container">
         <div id="row-1">
             <form action="/add-city" method="POST" id="search-city-above" class="search-city">
-                <input class="search-input" name="name" placeholder="Enter City Name ..." />
+                <input class="search-input" name="name" placeholder="Enter City Name ..." required />
                 <button class="search-button">Add</button>
             </form>
             <div id="map-container">
@@ -35,13 +35,15 @@
         </div>
         <div id="row-2">
             <form action="/add-city" method="POST" id="search-city-below" class="search-city">
-                <input class="search-input" name="name" placeholder="Enter City Name ..." />
+                <input class="search-input" name="name" placeholder="Enter City Name ..." required />
                 <button class="search-button">Add</button>
             </form>
-            <div id="update-cities">
-                Update Cities
-                <i class="fa-solid fa-arrows-rotate"></i>
-            </div>
+            <a href="/update-cities">
+                <div id="update-cities">
+                    Update Cities
+                    <i class="fa-solid fa-arrows-rotate"></i>
+                </div>
+            </a>
             <div id="city-results">
                 <% if (cityList.length === 0) { %>
                     <div id="no-city" class="city-result">
@@ -49,24 +51,38 @@
                     </div>
                 <% } else { for (let city of cityList) { %>
                     <div class="city-result">
-                        <div><%= city.nom %></div>
+                        <div><%= city.city_name %></div>
                         <div class="temperature">
-                            <%= city.temps.desc %>
-                            <img src="images/<%= city.temps.img %>" />
-                            <span class="badge rounded-pill bg-warning text-dark"><%= city.temps.jour %>°c</span>
-                            <span class="badge rounded-pill bg-secondary"><%= city.temps.nuit %>°c</span>
+                            <%= city.description %>
+                            <img src="http://openweathermap.org/img/w/<%= city.icon %>.png" />
+                            <span class="badge rounded-pill bg-warning text-dark"><%= city.high_temp %>°c</span>
+                            <span class="badge rounded-pill bg-secondary"><%= city.low_temp %>°c</span>
                         </div>
-                        <a href="/delete-city?remove=<%= cityList.indexOf(city) %>"><i class="fa-regular fa-circle-xmark"></i></a>
+                        <a href="/delete-city?remove=<%= city._id %>"><i class="fa-regular fa-circle-xmark"></i></a>
                     </div>
                 <% } } %>
             </div>
         </div>
     </div>
 
-
-
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+    <script>
+        if ('<%= error %>' !== 'false') {
+            var inputs = $(".search-input");
+            for (let input of inputs) {
+                $(input).css('border', "1px solid red");
+                $(input).val('<%= error.ville %>');
+                var error_text = $(`<div class='error_text'><%= error.message %></div>`);
+                $(error_text).css('color', 'red');
+                if ($(input).parent().attr('id') === "search-city-above") {
+                    // a  modifier
+                    $(error_text).css('visibility', 'hidden');
+                };
+                $(input).parent().after(error_text);
+            };
+        };
+    </script>
 </body>
 </html>

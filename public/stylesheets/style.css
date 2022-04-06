@@ -24,8 +24,7 @@ a {
   background-image: url('../images/weather.jpg');
   background-position: center;
   background-size: cover;
-  background-repeat: no-repeat;
-  
+  background-repeat: no-repeat; 
   color: #FFFFFF;
   text-shadow: 1px 1px 1px black;
   padding-top: 20px;
@@ -83,6 +82,7 @@ a {
   align-self: stretch;
   display: flex;
   min-height: 40px;
+  flex-wrap: wrap;
 }
 
 #search-city-below {
