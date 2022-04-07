@@ -1,19 +1,73 @@
 require('dotenv').config();
-const CityModel = require('./bdd.js');
+const CityModel = require('../models/cities');
+const UserModel = require('../models/users');
+var { capitalize, temp_req } = require('../utils');
+
 var express = require('express');
-const { route } = require('express/lib/application');
 var router = express.Router();
-var request = require('sync-request');
-var { capitalize, temp_req } = require('./utils');
 
 /* GET home page. */
-router.get('/', async function(req, res, next) {
-  res.render('login');
+router.get('/', function(req, res, next) {
+  if (req.session.user) res.redirect('/weather');
+  else res.render('login', { error: "" });
 });
 
+router.post('/signup', async function(req, res, next) {
+  /* chercher si un user avec cette email existe deja */
+  var existingUser = await UserModel.findOne({ email: req.body.email });
+  /* si non on procede */
+  if (!existingUser) {
+    /* creer nouveau user */
+    const newUser = UserModel({
+      username: req.body.username,
+      email: req.body.email,
+      password: req.body.password
+    });
+    await newUser.save();
+    /* sauvegarder l'information en session */
+    req.session.user = {
+      id: newUser._id,
+      username: newUser.username,
+    };
+    res.redirect('/weather');
+  /* si oui on ne cree pas un nouveau user */
+  } else res.render('login', { 
+    error: "Email deja trouve dans le systeme. Veulliez essayer de creer un compte avec un email unique."
+  });
+});
+
+router.post('/signin', async function(req, res, next) {
+  /* verifier que les details du login soient correctes */
+  const currentUser = await UserModel.findOne({ username: req.body.username, password: req.body.password });
+  if (currentUser) {
+    /* sauvegarder cette information en session */
+    req.session.user = {
+      id: currentUser._id,
+      username: currentUser.username
+    }
+    /* aller sur la page principale */
+    res.redirect('/weather');
+  /* si les informations sont incorrectes on est de retour sur le login */
+  } else res.render('login', { 
+    error: "Email ou mot de passe incorrecte",
+  });
+});
+
+router.get('/logout', function(req, res, next) {
+  /* on elimine les informations du session user */
+  req.session.user = null;
+  /* on retourne sur la page login */
+  res.redirect('/');
+})
+
 router.get('/weather', async function(req, res, next) {
-  var cityList = await CityModel.find({});
-  res.render('weather', { cityList, error: false });
+  /* si quelqu'un essaye d'acceder cette url sans avoir un session valid on retourne au login */
+  if (!req.session.user) { res.redirect('/'); }
+  else {
+    /* recuperer toutes les villes du base des donnees */
+    var cityList = await CityModel.find({});
+    res.render('weather', { cityList, error: false });
+  };
 });
 
 router.post('/add-city', async function(req, res, next) {

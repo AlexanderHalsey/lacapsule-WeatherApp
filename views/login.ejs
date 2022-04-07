@@ -15,15 +15,18 @@
   <body>
     <h2 id="getStarted">Get started with WeatherApp!</h2>
 
+    <% if (error) { %>
+      <div class="d-flex justify-content-center" style="color: red;"><%= error %></div>
+    <% } %>
 		<div class="globalForm">
-
 			<div class="signBox">
         <h4>Sign Up</h4>
-        <form class="formGlobal">
+        <form action="/signup" method="POST" class="formGlobal">
 
           <div class="formGroup">
             <label for="exampleInputUsername">Username</label>
             <input
+            name="username"
             type="text"
             class="formcontrol"
             placeholder="Enter username"/>
@@ -32,6 +35,7 @@
           <div class="formGroup">
             <label for="exampleInputEmail1">Email address</label>
             <input
+            name="email"
             type="email"
             class="formcontrol"
             aria-describedby="emailHelp"
@@ -42,6 +46,7 @@
           <div class="formGroup">
             <label for="exampleInputPassword1">Password</label>
             <input
+            name="password"
             type="password"
             class="formcontrol"
             placeholder="Enter password"
@@ -55,29 +60,20 @@
 
       <div class="signBox">
         <H4>Sign In</H4>
-        <form class="formGlobal">
-
-          <div class="formGroup" id="SignInUsernameBox">
+        <form action="/signin" method="POST" class="formGlobal">
+          <div class="formGroup">
             <label for="exampleInputUsername">Username</label>
             <input
+            name="username"
             type="text"
             class="formcontrol"
             placeholder="Enter username"/>
           </div>
 
-          <div class="formGroup" id="SignInEmailnameBox">
-            <label for="exampleInputEmail1" >Email address</label>
-            <input
-            type="email"
-            class="formcontrol"
-            aria-describedby="emailHelp"
-            placeholder="Enter email"
-            />
-          </div>
-
           <div class="formGroup">
             <label for="exampleInputPassword1">Password</label>
             <input
+            name="password"
             type="password"
             class="formcontrol"
             placeholder="Enter password"
